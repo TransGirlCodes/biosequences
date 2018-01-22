@@ -2,19 +2,27 @@
 // Created by Ben Ward (EI) on 18/01/2018.
 //
 
+
+#include <type_traits>
+#include <numeric>
+#include <ostream>
+
 #ifndef BIOSEQUENCES_BIOSYMBOLS_H
 #define BIOSEQUENCES_BIOSYMBOLS_H
 
-#include <type_traits>
-
 namespace biosymbols {
+
     template<typename T>
     struct is_nucleic_acid {
         static const bool value = false;
     };
 
-// The full gamut of symbols for the DNA nucleotide alphabet.
-    enum class DNA : unsigned char {
+    template<typename T>
+    struct conversion_table {};
+
+
+    // DNA nucleotide symbols.
+    enum class DNA : uint8_t {
         Gap, A, C, M, G, R, S, V,
         T, W, Y, H, K, D, B, N, Invalid
     };
@@ -23,6 +31,118 @@ namespace biosymbols {
     struct is_nucleic_acid<DNA> {
         static const bool value = true;
     };
+
+    template<>
+    struct conversion_table<DNA> {
+        static constexpr DNA from_char[256] = {DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Gap, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::A,
+                                               DNA::B, DNA::C, DNA::D,
+                                               DNA::Invalid, DNA::Invalid, DNA::G,
+                                               DNA::H, DNA::Invalid, DNA::Invalid,
+                                               DNA::K, DNA::Invalid, DNA::M,
+                                               DNA::N, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::R, DNA::S,
+                                               DNA::T, DNA::Invalid, DNA::V,
+                                               DNA::W, DNA::Invalid, DNA::Y,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::A, DNA::B,
+                                               DNA::C, DNA::D, DNA::Invalid,
+                                               DNA::Invalid, DNA::G, DNA::H,
+                                               DNA::Invalid, DNA::Invalid, DNA::K,
+                                               DNA::Invalid, DNA::M, DNA::N,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::R, DNA::S, DNA::T,
+                                               DNA::Invalid, DNA::V, DNA::W,
+                                               DNA::Invalid, DNA::Y, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid, DNA::Invalid, DNA::Invalid,
+                                               DNA::Invalid};
+
+        static constexpr char to_char[16] = {'-', 'A', 'C', 'M', 'G', 'R', 'S', 'V', 'T', 'W',
+                                             'Y', 'H', 'K', 'D', 'B', 'N'};
+    };
+
+    template<typename T>
+    char as_character(const T& nt) {
+        using UT = typename std::underlying_type<T>::type;
+        return conversion_table<T>::to_char[static_cast<UT>(nt)];
+    }
+
+    template<typename T>
+    T as_symbol(const char& c) {
+        return conversion_table<T>::from_char[c];
+    }
+
+    std::ostream &operator<<(std::ostream &stream, const DNA &nt) {
+        return stream << as_character(nt);
+    }
+
+// The full gamut of symbols for the DNA nucleotide alphabet.
+
+
 
 // The full gamut of symbols for the RNA alphabet.
     enum class RNA : unsigned char {
@@ -50,9 +170,9 @@ namespace biosymbols {
 #if __has_builtin(__builtin_popcount)
         return __builtin_popcount(b);
 #else
-        b = b - ((b >> 1) & 0x55);
+        b = b - (b >> 1 & 0x55);
         b = (b & 0x33) + ((b >> 2) & 0x33);
-        return (((b + (b >> 4)) & 0x0F) * 0x01);
+        return ((b + (b >> 4) & 0x0F) * 0x01);
 #endif
     }
 
@@ -71,7 +191,7 @@ namespace biosymbols {
     }
 
     template<typename NucleicAcid>
-    NucleicAcid not_version(NucleicAcid nt) {
+    NucleicAcid operator~(NucleicAcid nt) {
         static_assert(is_nucleic_acid<NucleicAcid>::value, "Values are not nucleic acids.");
         using UT = typename std::underlying_type<NucleicAcid>::type;
         return static_cast<NucleicAcid>(~static_cast<UT>(nt) & 0b1111);
@@ -135,95 +255,7 @@ namespace biosymbols {
         return count_ones(nt) == 1;
     }
 
-    DNA char_to_dna[256] = {DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Gap, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::A,
-                            DNA::B, DNA::C, DNA::D,
-                            DNA::Invalid, DNA::Invalid, DNA::G,
-                            DNA::H, DNA::Invalid, DNA::Invalid,
-                            DNA::K, DNA::Invalid, DNA::M,
-                            DNA::N, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::R, DNA::S,
-                            DNA::T, DNA::Invalid, DNA::V,
-                            DNA::W, DNA::Invalid, DNA::Y,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::A, DNA::B,
-                            DNA::C, DNA::D, DNA::Invalid,
-                            DNA::Invalid, DNA::G, DNA::H,
-                            DNA::Invalid, DNA::Invalid, DNA::K,
-                            DNA::Invalid, DNA::M, DNA::N,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::R, DNA::S, DNA::T,
-                            DNA::Invalid, DNA::V, DNA::W,
-                            DNA::Invalid, DNA::Y, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid, DNA::Invalid, DNA::Invalid,
-                            DNA::Invalid};
 
-    char dna_to_char[16] = {'-', 'A', 'C', 'M', 'G', 'R', 'S', 'V', 'T', 'W',
-                            'Y', 'H', 'K', 'D', 'B', 'N'};
 
     RNA char_to_rna[256] = {RNA::Invalid, RNA::Invalid, RNA::Invalid,
                             RNA::Invalid, RNA::Invalid, RNA::Invalid,

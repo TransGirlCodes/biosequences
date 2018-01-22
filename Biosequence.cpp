@@ -13,27 +13,23 @@ uint64_t seq_datastore_len(unsigned int len) {
 
 // Biosequence methods.
 
-size_t Biosequence::size() {
+const Biosequence::size_type Biosequence::size() const {
     return len;
 }
 
-size_t Biosequence::datastore_size() {
+const Biosequence::size_type Biosequence::datastore_size() const {
     return datastore.size();
 }
 
-Biosequence::Biosequence(unsigned int n) {
+Biosequence::Biosequence(size_type n) {
     datastore = std::vector<uint64_t>(seq_datastore_len(n));
     len = n;
 }
 
-SeqIndexer Biosequence::operator[](unsigned int idx) {
-    return SeqIndexer(*this, idx);
-}
-
-int64_t SeqIndexer::index() {
+Biosequence::size_type Biosequence::reference::index() const {
     return position >> 6;
 }
 
-int64_t SeqIndexer::offset() {
+Biosequence::size_type Biosequence::reference::offset() const {
     return position & 0b111111;
 }
