@@ -3,6 +3,7 @@
 //
 
 #include <vector>
+#include <string>
 #include "biosymbols.h"
 #include "bitops.h"
 
@@ -11,16 +12,16 @@
 
 // Stand alone function, calculate how big a Biosequence's
 // data store should be.
-uint64_t seq_datastore_len(unsigned int len);
+uint64_t seq_datastore_len(unsigned long len);
 
 class Biosequence {
 
-    typedef biosymbols::DNA value_type;
+    typedef typename biosymbols::DNA value_type;
     typedef uint64_t size_type;
 
 private:
     std::vector<uint64_t> datastore;
-    size_type len;
+    size_type len = 0;
 
 public:
 
@@ -30,6 +31,7 @@ public:
     private:
         size_type position = 0;
         Biosequence& sequence;
+
         uint64_t get_chunk() const {
             return sequence.datastore[index()];
         }
@@ -55,7 +57,7 @@ public:
             return static_cast<biosymbols::DNA>(encoded_symbol);
         }
 
-        // Set the value of a nucleotide in a DNA sequence.
+        // Set the value of a nucleotide in a DNA sequence, with a symbol.
         reference& operator=(value_type x) {
             // Convert the symbol to a uint64_t.
             auto encoded_symbol = static_cast<uint64_t>(x);
@@ -73,11 +75,36 @@ public:
             return ~element;
         }
 
+        reference& operator++() { // prefix increment.
+            position += 4;
+            return *this;
+        }
+
+        reference operator++ (int) { // postfix increment.
+            reference result(*this);
+            ++(*this);
+            return result;
+        }
+
+
     };
 
     Biosequence(size_type n);
+
+    Biosequence(std::string& str) {
+        len = str.size();
+        datastore.resize(seq_datastore_len(str.size()));
+        reference i(*this, 0);
+        for(char& c : str) {
+            i = biosymbols::as_symbol<biosymbols::DNA>(c);
+            i++;
+        }
+    }
+
     const size_type size() const;
+
     const size_type datastore_size() const;
+
     reference operator[]( size_type pos ) {
         return reference(*this, pos);
     };

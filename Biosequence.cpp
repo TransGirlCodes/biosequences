@@ -5,7 +5,7 @@
 #include "Biosequence.h"
 #include "bitops.h"
 
-uint64_t seq_datastore_len(unsigned int len) {
+uint64_t seq_datastore_len(unsigned long len) {
     auto nucs_per_chunk = 64 / 4;
     auto d = len / nucs_per_chunk;
     return d + (((len > 0) == (nucs_per_chunk > 0)) & (d * nucs_per_chunk != len));
