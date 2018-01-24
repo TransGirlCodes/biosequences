@@ -175,15 +175,21 @@ TEST(biosymbols, arithmetic) {
 }
 
 TEST(SequenceConstruction, EmptySequences) {
-    EXPECT_EQ(26, Biosequence(26).size());
+    EXPECT_EQ(26, Biosequence<IUPAC_DNA>(26).size());
 }
 
 TEST(biosequence, strings_and_printing) {
+    // Test a round trip for making a seq from a string, and then a string from a sequence.
     std::ostringstream output;
     auto str = std::string("ATCGCCGAACGCGAAACGAAACCTGTGT");
-    Biosequence seq(str);
-    std::string newstring = seq;
+    Biosequence<IUPAC_DNA> seq(str);
+    std::string newstring(seq); // CLion flags this as error but it works fine with GCC.
     EXPECT_EQ(str, newstring);
     output << seq;
     EXPECT_EQ(output.str(), "ATCGCCGAACGCGAAACGAAACCTGTGT");
+
+    auto complement_string = std::string("TAGCGGCTTGCGCTTTGCTTTGGACACA");
+    seq.complement();
+    std::string compstring(seq);
+    EXPECT_EQ(complement_string, compstring);
 }
