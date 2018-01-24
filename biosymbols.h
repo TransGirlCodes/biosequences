@@ -6,6 +6,7 @@
 #include <type_traits>
 #include <numeric>
 #include <ostream>
+#include "bitops.h"
 
 #ifndef BIOSEQUENCES_BIOSYMBOLS_H
 #define BIOSEQUENCES_BIOSYMBOLS_H
@@ -140,9 +141,15 @@ namespace biosymbols {
         return stream << as_character(nt);
     }
 
+    //int bitops::trailing_zeros(uint32_t x);
+
+    int trailing_zeros(DNA nt) {
+        using UT = typename std::underlying_type<DNA>::type;
+        UT i = static_cast<UT>(nt);
+        return bitops::trailing_zeros(i);
+    }
+
 // The full gamut of symbols for the DNA nucleotide alphabet.
-
-
 
 // The full gamut of symbols for the RNA alphabet.
     enum class RNA : unsigned char {
@@ -155,12 +162,99 @@ namespace biosymbols {
         static const bool value = true;
     };
 
-// The full gamut of symbols for the amino acid alphabet.
-    enum class AA : unsigned char {
-        A, R, N, D, C, Q, E, G, H, I,
-        L, K, M, F, P, S, T, W, Y, V,
-        O, U, B, J, Z, X, Term, Gap
+    template<>
+    struct conversion_table<RNA> {
+        static constexpr RNA from_char[256] = {RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Gap, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::A,
+                                               RNA::B, RNA::C, RNA::D,
+                                               RNA::Invalid, RNA::Invalid, RNA::G,
+                                               RNA::H, RNA::Invalid, RNA::Invalid,
+                                               RNA::K, RNA::Invalid, RNA::M,
+                                               RNA::N, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::R, RNA::S,
+                                               RNA::Invalid, RNA::U, RNA::V,
+                                               RNA::W, RNA::Invalid, RNA::Y,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::A, RNA::B,
+                                               RNA::C, RNA::D, RNA::Invalid,
+                                               RNA::Invalid, RNA::G, RNA::H,
+                                               RNA::Invalid, RNA::Invalid, RNA::K,
+                                               RNA::Invalid, RNA::M, RNA::N,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::R, RNA::S, RNA::Invalid,
+                                               RNA::U, RNA::V, RNA::W,
+                                               RNA::Invalid, RNA::Y, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid, RNA::Invalid, RNA::Invalid,
+                                               RNA::Invalid};
+
+        static constexpr char to_char[16] = {'-', 'A', 'C', 'M', 'G', 'R', 'S', 'V', 'U', 'W',
+                            'Y', 'H', 'K', 'D', 'B', 'N'};
     };
+
 
     template<typename NucleicAcid>
     int count_ones(NucleicAcid nt) {
@@ -254,98 +348,6 @@ namespace biosymbols {
     bool is_certain(NucleicAcid nt) {
         return count_ones(nt) == 1;
     }
-
-
-
-    RNA char_to_rna[256] = {RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Gap, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::A,
-                            RNA::B, RNA::C, RNA::D,
-                            RNA::Invalid, RNA::Invalid, RNA::G,
-                            RNA::H, RNA::Invalid, RNA::Invalid,
-                            RNA::K, RNA::Invalid, RNA::M,
-                            RNA::N, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::R, RNA::S,
-                            RNA::Invalid, RNA::U, RNA::V,
-                            RNA::W, RNA::Invalid, RNA::Y,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::A, RNA::B,
-                            RNA::C, RNA::D, RNA::Invalid,
-                            RNA::Invalid, RNA::G, RNA::H,
-                            RNA::Invalid, RNA::Invalid, RNA::K,
-                            RNA::Invalid, RNA::M, RNA::N,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::R, RNA::S, RNA::Invalid,
-                            RNA::U, RNA::V, RNA::W,
-                            RNA::Invalid, RNA::Y, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid, RNA::Invalid, RNA::Invalid,
-                            RNA::Invalid};
-
-    char rna_to_char[16] = {'-', 'A', 'C', 'M', 'G', 'R', 'S', 'V', 'U', 'W',
-                            'Y', 'H', 'K', 'D', 'B', 'N'};
 
 }
 

@@ -8,10 +8,8 @@ OPTION(BUILD_TESTING "Build tests." ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(SOURCE_FILES Biosequence.cpp Biosequence.h biosymbols.h)
+set(SOURCE_FILES Biosequence.cpp Biosequence.h biosymbols.h alphabets.h)
 add_library(biosequences SHARED ${SOURCE_FILES})
-
-add_executable(biosymbols_check ../tests/biosymbols_checks.cpp)
 
 IF(BUILD_TESTING)
     add_executable(runBioseqTests tests/biosequence_checks.cpp)

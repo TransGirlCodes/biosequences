@@ -10,7 +10,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-6
+            - g++-7
             - doxygen
             - doxygen-doc
             - doxygen-latex
@@ -18,12 +18,12 @@ matrix:
             - graphviz
             - lcov
       env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6 && GCOV=gcov-6 && DEPLOY=true"
-        - CMAKE_OPTIONS="-DCMAKE_C_COMPILER=gcc-6 -DCMAKE_CXX_COMPILER=g++-6 -DINSTALL_GTEST=OFF -DINSTALL_GMOCK=OFF"
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7 && GCOV=gcov-6 && DEPLOY=true"
+        - CMAKE_OPTIONS="-DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7 -DINSTALL_GTEST=OFF -DINSTALL_GMOCK=OFF"
     - os: osx
       osx_image: xcode8
       env:
-        - MATRIX_EVAL="brew update && brew install gcc6 && CC=gcc-6 && CXX=g++-6"
+        - MATRIX_EVAL="brew update && brew install gcc7 && CC=gcc-7 && CXX=g++-7"
     - os: osx
       osx_image: xcode8
 
