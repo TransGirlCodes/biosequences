@@ -31,7 +31,7 @@ namespace bitops{
 
     template<>
     int count_ones(uint16_t x) {
-#if __has_builtin(__builtin_popcount)
+#ifdef __builtin_popcount
         return __builtin_popcount(x);
 #else
         return count_ones_fallback(x);
@@ -40,7 +40,7 @@ namespace bitops{
 
     template<>
     int count_ones(uint32_t x) {
-#if __has_builtin(__builtin_popcountl)
+#ifdef __builtin_popcountl
         return __builtin_popcountl(x);
 #else
         return count_ones_fallback(x);
@@ -49,7 +49,7 @@ namespace bitops{
 
     template<>
     int count_ones(uint64_t x) {
-#if __has_builtin(__builtin_popcountll)
+#ifdef __builtin_popcountll
         return __builtin_popcountll(x);
 #else
         return count_ones_fallback(x);
@@ -57,7 +57,7 @@ namespace bitops{
     }
 
     int trailing_zeros(uint8_t x) {
-#if __has_builtin(__builtin_ctz)
+#ifdef __builtin_ctz
         return __builtin_ctz(x);
 #else
         int c = 8;
@@ -71,7 +71,7 @@ namespace bitops{
     }
 
     int trailing_zeros(uint64_t x) {
-#if __has_builtin(__builtin_ctzll)
+#ifdef __builtin_ctzll
         return __builtin_ctzll(x);
 #else
         int c = 64;
@@ -88,7 +88,7 @@ namespace bitops{
     }
 
     int trailing_zeros(uint32_t x) {
-#if __has_builtin(__builtin_ctzl)
+#ifdef __builtin_ctzl
         return __builtin_ctzll(x);
 #else
         int c = 32;
