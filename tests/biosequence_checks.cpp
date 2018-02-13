@@ -2,7 +2,7 @@
 // Created by Ben Ward (EI) on 18/01/2018.
 //
 
-#include "../biosequence.h"
+#include "../Biosequence.h"
 #include "gtest/gtest.h"
 #include <string>
 
