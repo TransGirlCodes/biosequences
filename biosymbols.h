@@ -261,7 +261,7 @@ namespace biosymbols {
         static_assert(is_nucleic_acid<NucleicAcid>::value, "Values are not nucleic acids");
         using UT = typename std::underlying_type<NucleicAcid>::type;
         auto b = static_cast<UT>(nt);
-#if __has_builtin(__builtin_popcount)
+#ifdef __builtin_popcount
         return __builtin_popcount(b);
 #else
         b = b - (b >> 1 & 0x55);
